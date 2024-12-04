@@ -1,19 +1,27 @@
-Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 minikube start
-minikube docker-env | Invoke-Expression
-docker build -t login-register-service:latest .
-kubectl apply -f deployment.yaml
 
-# Capture the service URL
+minikube docker-env | Invoke-Expression
+
+docker build -t login-register-service:latest .
+
+kubectl apply -f .\deployment.yaml
+
 minikube service login-register-service --url
 
-$uri = "http://127.0.0.1:50816/register"
+
+
+
+
+
+-----------------------
+$uri = "http://127.0.0.1:51298/register"
 $headers = @{
     "Content-Type" = "application/json"
 }
 $body = @{
-    "username" = "testuser"
+    "email" = "testuser@example.com"
     "password" = "testpassword"
 }
 
