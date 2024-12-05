@@ -16,25 +16,25 @@ minikube service login-register-service --url
 
 
 -----------------------
-$uri = "http://127.0.0.1:52903/register"
+$uri = "http://127.0.0.1:60463/register"
 $headers = @{
     "Content-Type" = "application/json"
 }
 $body = @{
-    "email" = "testuser2@example.com"
+    "email" = "testuser@example.com"
     "password" = "testpassword"
 }
 Invoke-RestMethod -Uri $uri -Method Post -Headers $headers -Body ($body | ConvertTo-Json)
 
-$uri = "http://127.0.0.1:52903/login"
+$uri = "http://127.0.0.1:60463/login"
 $headers = @{
     "Content-Type" = "application/json"
 }
 $body = @{
-    "email" = "testuser2@example.com"
+    "email" = "testuser@example.com"
     "password" = "testpassword"
 }
 Invoke-RestMethod -Uri $uri -Method Post -Headers $headers -Body ($body | ConvertTo-Json)
 
-$uri = "http://127.0.0.1:51634/user/1"
+$uri = "http://127.0.0.1:59883/user/1"
 Invoke-RestMethod -Uri $uri -Method Delete

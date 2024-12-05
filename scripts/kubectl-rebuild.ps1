@@ -1,2 +1,2 @@
-.\kubectl-reset.ps1
-.\kubectl-apply.ps1
+.\scripts\kubectl-reset.ps1
+.\scripts\kubectl-apply.ps1
