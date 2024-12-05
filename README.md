@@ -16,7 +16,7 @@ The main web framework used in developing the backend is a **Python-based web fr
 The application is containerized with **Docker** and orchestrated using **Kubernetes**.
 
 ## Architecture schema
-![Architecture schema](Assets/architecture-schema.drawio.png)
+![Architecture schema](assets/architecture-schema-dark.png)
 
 ## List of microservice functionalities
 - **Login register microservice**
