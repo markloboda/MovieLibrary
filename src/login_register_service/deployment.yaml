@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: login-register-service
+  name: login-register-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: login-register-service
+      app: login-register
   template:
     metadata:
       labels:
-        app: login-register-service
+        app: login-register
     spec:
       containers:
-      - name: login-register-service
+      - name: login-register
         image: login-register-service:latest
         imagePullPolicy: Never
         ports:
@@ -22,10 +22,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: login-register-service
+  name: login-register
 spec:
   selector:
-    app: login-register-service
+    app: login-register
   ports:
     - protocol: TCP
       port: 80

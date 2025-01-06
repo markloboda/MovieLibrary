@@ -1,9 +1,8 @@
-from flask import Flask, jsonify
+from flask import Flask
 from flask.views import MethodView
 from flask_smorest import Blueprint, Api, abort
 from flask_cors import CORS
 from hashlib import sha256
-from marshmallow import ValidationError
 import logging
 
 from models import db, UserSchema, UserModel
@@ -11,11 +10,12 @@ from models import db, UserSchema, UserModel
 app = Flask(__name__)
 CORS(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config["API_TITLE"] = "My API"
+app.config["API_TITLE"] = "LoginRegisterService"
 app.config["API_VERSION"] = "v1"
 app.config["OPENAPI_VERSION"] = "3.0.2"
+app.config['OPENAPI_URL_PREFIX'] = '/'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -28,12 +28,6 @@ with app.app_context():
 
 api = Api(app)
 blp = Blueprint("Users", "users", description="Operations on users")
-
-@app.errorhandler(ValidationError)
-def handle_validation_error(error):
-    response = jsonify(error.messages)
-    response.status_code = 422
-    return response
 
 @blp.route("/register", methods=["POST"])
 class UserRegister(MethodView):
@@ -56,6 +50,7 @@ class UserRegister(MethodView):
 class UserLogin(MethodView):
     @blp.arguments(UserSchema)
     def post(self, user_data):
+        logger.debug(f"Received login data: {user_data}")
         user = UserModel.query.filter(UserModel.email == user_data["email"]).first()
         if not user or user.password != sha256(user_data["password"].encode('utf-8')).hexdigest():
             abort(401, message="Invalid credentials.")
@@ -72,4 +67,5 @@ class Users(MethodView):
 app.register_blueprint(blp)
 
 if __name__ == '__main__':
+    logger.debug("Starting LoginRegisterService")
     app.run(host='0.0.0.0', port=5000, debug=True)
