@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+</head>
+
+<body>
+    <h1>User Management</h1>
+
+    <h2>Register</h2>
+    <form id="registerForm">
+        <label for="registerEmail">Email:</label>
+        <input type="email" id="registerEmail" name="email" required>
+        <label for="registerPassword">Password:</label>
+        <input type="password" id="registerPassword" name="password" required minlength="6">
+        <button type="submit">Register</button>
+    </form>
+
+    <h2>Login</h2>
+    <form id="loginForm">
+        <label for="loginEmail">Email:</label>
+        <input type="email" id="loginEmail" name="email" required>
+        <label for="loginPassword">Password:</label>
+        <input type="password" id="loginPassword" name="password" required>
+        <button type="submit">Login</button>
+    </form>
+
+    <h2>Users</h2>
+    <button id="fetchUsers">Fetch All Users</button>
+    <ul id="usersList"></ul>
+
+    <script>
+        const url = "http://127.0.0.1:53016";
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            if (password.length < 6) {
+                alert("Password must be at least 6 characters long.");
+                return;
+            }
+
+            const response = await fetch(`${url}/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    "email": email,
+                    "password": password
+                })
+            });
+            if (response.ok) {
+                const result = await response.json();
+                alert(result.message);
+            } else {
+                const error = await response.json();
+                alert(`Error: ${error.message}`);
+            }
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const response = await fetch(`${url}/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    "email": email,
+                    "password": password
+                })
+            });
+            if (response.ok) {
+                const result = await response.json();
+                alert(result.message);
+            } else {
+                const error = await response.json();
+                alert(`Error: ${error.message}`);
+            }
+        });
+
+        document.getElementById('fetchUsers').addEventListener('click', async () => {
+            const response = await fetch(`${url}/users`);
+            const users = await response.json();
+            const usersList = document.getElementById('usersList');
+            usersList.innerHTML = '';
+            users.forEach(user => {
+                const li = document.createElement('li');
+                li.textContent = user.email;
+                usersList.appendChild(li);
+            });
+        });
+    </script>
+</body>
+
+</html>
