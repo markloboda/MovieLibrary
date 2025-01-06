@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: browse-library-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: browse-library
+  template:
+    metadata:
+      labels:
+        app: browse-library
+    spec:
+      containers:
+      - name: browse-library
+        image: browse-library-service:latest
+        imagePullPolicy: Never
+        env:
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: omdb-api-key
+              key: api-key
+        ports:
+        - containerPort: 5001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: browse-library
+spec:
+  selector:
+    app: browse-library
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5001
+  type: LoadBalancer
