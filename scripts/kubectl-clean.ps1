@@ -1,4 +1,8 @@
-minikube docker-env | Invoke-Expression
-kubectl delete service browse-library
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+kubectl delete deployment login-register-deployment
 kubectl delete deployment browse-library-deployment
-kubectl get pods --no-headers -o custom-columns=":metadata.name" | kubectl delete pods
+kubectl delete deployment watchlist-watched-deployment
+kubectl delete service login-register
+kubectl delete service browse-library
+kubectl delete service watchlist-watched

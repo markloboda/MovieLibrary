@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watchlist and Watched List</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <h1>Watchlist and Watched List</h1>
+    <div>
+        <button id="viewWatchlist">View Watchlist</button>
+        <button id="viewWatched">View Watched List</button>
+    </div>
+
+    <div id="results"></div>
+
+    <template id="movieTemplate">
+        <div class="movie-entry">
+            <h2 class="movie-title"></h2>
+            <p class="movie-year"></p>
+            <img class="movie-poster" src="" alt="Movie Poster">
+        </div>
+    </template>
+
+    <script src="../js/watchlist_watched.js"></script>
+</body>
+
+</html>

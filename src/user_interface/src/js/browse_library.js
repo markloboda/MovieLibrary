@@ -1,16 +1,17 @@
-const url = "http://127.0.0.1:59702";
+const loginUrl = "http://127.0.0.1:58228/login";
+const watchlistUrl = "http://127.0.0.1:58222";
 
 document.getElementById('searchForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const title = document.getElementById('searchTitle').value;
 
-    const response = await fetch(`${url}/search?title=${title}`, {
+    const response = await fetch(`${loginUrl}/search?title=${title}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     });
 
     const searchResults = document.getElementById('searchResults');
-    searchResults.innerHTML = ''; // Clear previous results
+    searchResults.innerHTML = '';  // Clear previous results
 
     if (response.ok) {
         const result = await response.json();
@@ -21,6 +22,8 @@ document.getElementById('searchForm').addEventListener('submit', async (e) => {
             template.querySelector('.movie-title').textContent = movie.Title;
             template.querySelector('.movie-year').textContent = movie.Year;
             template.querySelector('.movie-poster').src = movie.Poster !== 'N/A' ? movie.Poster : '';
+            template.querySelector('.add-to-watchlist').addEventListener('click', () => addToWatchlist(movie));
+            template.querySelector('.add-to-watched').addEventListener('click', () => addToWatched(movie));
             searchResults.appendChild(template);
         });
     } else {
@@ -28,3 +31,41 @@ document.getElementById('searchForm').addEventListener('submit', async (e) => {
         alert(`Error: ${error.message}`);
     }
 });
+
+async function addToWatchlist(movie) {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${watchlistUrl}/watchlist`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ movie })
+    });
+
+    if (response.ok) {
+        alert('Movie added to watchlist');
+    } else {
+        const error = await response.json();
+        alert(`Error: ${error.message}`);
+    }
+}
+
+async function addToWatched(movie) {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${watchlistUrl}/watched`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ movie })
+    });
+
+    if (response.ok) {
+        alert('Movie added to watched list');
+    } else {
+        const error = await response.json();
+        alert(`Error: ${error.message}`);
+    }
+}
