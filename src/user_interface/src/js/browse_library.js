@@ -1,11 +1,10 @@
-const loginUrl = "http://127.0.0.1:58228/login";
-const watchlistUrl = "http://127.0.0.1:58222";
+const apiUrl = "http://165.227.245.243/browse-library";
 
 document.getElementById('searchForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const title = document.getElementById('searchTitle').value;
 
-    const response = await fetch(`${loginUrl}/search?title=${title}`, {
+    const response = await fetch(`${apiUrl}/search?title=${title}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     });
@@ -34,7 +33,7 @@ document.getElementById('searchForm').addEventListener('submit', async (e) => {
 
 async function addToWatchlist(movie) {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${watchlistUrl}/watchlist`, {
+    const response = await fetch(`${apiUrl}/watchlist`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -53,7 +52,7 @@ async function addToWatchlist(movie) {
 
 async function addToWatched(movie) {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${watchlistUrl}/watched`, {
+    const response = await fetch(`${apiUrl}/watched`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

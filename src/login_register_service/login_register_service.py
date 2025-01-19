@@ -24,6 +24,8 @@ app.config['SECRET_KEY'] = 'secret_key'  # TODO: Change this to a secure key
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+logger.debug("Starting LoginRegisterService")
+
 db.init_app(app)
 
 with app.app_context():
@@ -67,6 +69,7 @@ class UserLogin(MethodView):
 @blp.route("/clearDB", methods=["POST"])
 class ClearDatabase(MethodView):
     def post(self):
+        logger.debug("Post on /clearDB.")
         db.drop_all()
         db.create_all()
         return {"message": "Database cleared and recreated."}, 200
@@ -76,4 +79,4 @@ app.register_blueprint(blp)
 
 if __name__ == '__main__':
     logger.debug("Starting LoginRegisterService")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=True)

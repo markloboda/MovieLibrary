@@ -131,4 +131,4 @@ blp.add_url_rule('/movies', view_func=MovieView.as_view('movie_post'), methods=[
 app.register_blueprint(blp)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5002, debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=True)

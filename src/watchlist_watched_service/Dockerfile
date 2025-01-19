@@ -10,8 +10,8 @@ COPY . .
 
 ENV FLASK_APP=watchlist_watched_service.py
 ENV FLASK_RUN_HOST=0.0.0.0
-ENV FLASK_RUN_PORT=5002
+ENV FLASK_RUN_PORT=8080
 
-EXPOSE 5002
+EXPOSE 8080
 
 CMD ["flask", "run"]

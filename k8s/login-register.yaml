@@ -14,20 +14,26 @@ spec:
     spec:
       containers:
       - name: login-register
-        image: login-register-service:latest
-        imagePullPolicy: Never
+        image: markloboda/login_register_service:latest
+        imagePullPolicy: Always
+        env:
+        - name: FLASK_ENV
+          value: development
+        - name: FLASK_DEBUG
+          value: "1"
+        - name: API_KEY
         ports:
-        - containerPort: 5000
+        - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: login-register
 spec:
+  type: ClusterIP
   selector:
     app: login-register
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 5000
-  type: LoadBalancer
+      targetPort: 8080

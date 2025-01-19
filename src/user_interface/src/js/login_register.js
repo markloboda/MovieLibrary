@@ -1,4 +1,4 @@
-const url = "http://127.0.0.1:62103";
+const url = "http://165.227.245.243/login-register";
 
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
