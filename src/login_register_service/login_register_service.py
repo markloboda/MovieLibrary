@@ -6,6 +6,7 @@ from hashlib import sha256
 import logging
 import jwt
 import datetime
+import os
 
 from models import db, UserSchema, UserModel, UserAlreadyExistsException, InvalidCredentialsException
 
@@ -16,7 +17,7 @@ app.config["API_TITLE"] = "LoginRegisterService"
 app.config["API_VERSION"] = "v1"
 app.config["OPENAPI_VERSION"] = "3.0.2"
 app.config['OPENAPI_URL_PREFIX'] = '/'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'secret_key'  # TODO: Change this to a secure key
 
@@ -65,15 +66,6 @@ class UserLogin(MethodView):
         }, app.config['SECRET_KEY'], algorithm='HS256')
         
         return {"token": token, "message": "Login successful."}, 200
-    
-@blp.route("/clearDB", methods=["POST"])
-class ClearDatabase(MethodView):
-    def post(self):
-        logger.debug("Post on /clearDB.")
-        db.drop_all()
-        db.create_all()
-        return {"message": "Database cleared and recreated."}, 200
-
 
 app.register_blueprint(blp)
 
