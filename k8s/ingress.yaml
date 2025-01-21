@@ -31,7 +31,15 @@ spec:
             name: login-register
             port:
               number: 8080
-      - path: /ui(/|$)(.*)
+      - path: /frontend(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: movie-library-frontend
+            port:
+              number: 80
+
+      - path: /(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
