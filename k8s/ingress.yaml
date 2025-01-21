@@ -17,17 +17,24 @@ spec:
   rules:
   - http:
       paths:
-      - path: /browse-library(/|$)(.*)
+      - path: /service/browse-library(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
             name: browse-library
             port:
               number: 8080
-      - path: /login-register(/|$)(.*)
+      - path: /service/login-register(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
             name: login-register
             port:
               number: 8080
+      - path: /ui(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: movie-library-frontend
+            port:
+              number: 80

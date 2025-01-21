@@ -26,7 +26,7 @@ export default {
     return {
       searchQuery: '',
       movies: [],
-      apiUrl: 'http://165.227.245.243/browse-library'
+      apiUrl: 'http://165.227.245.243/service/browse-library'
     };
   },
   methods: {

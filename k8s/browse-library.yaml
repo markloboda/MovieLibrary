@@ -24,7 +24,7 @@ spec:
         - name: API_KEY
           valueFrom:
             secretKeyRef:
-              name: omdb-api-key
+              name: omdb
               key: api-key
         ports:
         - containerPort: 8080

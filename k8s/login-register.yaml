@@ -24,8 +24,13 @@ spec:
         - name: DB_URI
           valueFrom:
             secretKeyRef:
-              name: database-uri
+              name: database
               key: uri
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: jwt-secret
+              key: key
         ports:
         - containerPort: 8080
 ---

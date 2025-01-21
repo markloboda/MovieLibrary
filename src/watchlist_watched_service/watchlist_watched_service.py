@@ -14,7 +14,7 @@ app.config["OPENAPI_VERSION"] = "3.0.2"
 app.config['OPENAPI_URL_PREFIX'] = '/'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///watchlist_watched.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'secret_key'  #TODO:Change this to the same secret key as login_register_service
+app.config['JWT_SECRET_KEY'] = 'JWT_SECRET_KEY'  #TODO:Change this to the same secret key as login_register_service
 
 db.init_app(app)
 
@@ -30,7 +30,7 @@ def get_user_id_from_token():
     if not token:
         abort(401, message="Token is missing")
     try:
-        data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        data = jwt.decode(token, app.config['JWT_SECRET_KEY'], algorithms=['HS256'])
         return data['user_id']
     except jwt.ExpiredSignatureError:
         abort(401, message="Token has expired")

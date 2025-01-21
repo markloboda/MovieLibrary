@@ -36,7 +36,7 @@
 export default {
     data() {
         return {
-            url: "http://165.227.245.243/login-register",
+            url: "http://165.227.245.243/service/login-register",
             registerData: {
                 email: "",
                 password: "",
@@ -45,6 +45,10 @@ export default {
                 email: "",
                 password: "",
             },
+            userData: {
+                user_id: 0,
+                email: "",
+            }
         };
     },
     methods: {
@@ -57,8 +61,8 @@ export default {
             try {
                 const response = await fetch(`${this.url}/register`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(this.registerData),
+                    headers: { "Content-Type": "application/json" },
                 });
 
                 if (response.ok) {
@@ -77,14 +81,17 @@ export default {
             try {
                 const response = await fetch(`${this.url}/login`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    credentials: 'include',
                     body: JSON.stringify(this.loginData),
+                    headers: { "Content-Type": "application/json" },
                 });
 
                 if (response.ok) {
-                    // const result = await response.json();
                     alert("Login successful");
+                    this.checkToken();
 
+                    // Redirect to the home page
+                    // this.$router.push("/");
                 } else {
                     const error = await response.json();
                     alert(`Error: ${error.message}`);
@@ -92,6 +99,25 @@ export default {
             } catch (err) {
                 console.error("Login error:", err);
                 alert("An unexpected error occurred.");
+            }
+        },
+        async checkToken() {
+            try {
+                const response = await fetch(`${this.url}/check-token`, {
+                    method: "GET",
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    this.userData = result;
+                    alert("User data:", this.userData);
+                } else {
+                    const error = await response.json();
+                    alert(`Error: ${error.message}`);
+                }
+            } catch (err) {
+                console.error("Check token error:", err);
             }
         }
     },
