@@ -1,27 +1,34 @@
 <template>
-    <div>
-        <h1>User Management</h1>
+    <div class="login-register">
+        <div class="form-container">
+            <h2>Register</h2>
+            <form @submit.prevent="register">
+                <div class="form-group">
+                    <label for="registerEmail">Email:</label>
+                    <input type="email" id="registerEmail" v-model="registerData.email" required />
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password:</label>
+                    <input type="password" id="registerPassword" v-model="registerData.password" required />
+                </div>
+                <button type="submit" class="btn">Register</button>
+            </form>
+        </div>
 
-        <h2>Register</h2>
-        <form @submit.prevent="register">
-            <label for="registerEmail">Email:</label>
-            <input type="email" id="registerEmail" v-model="registerData.email" required />
-            <label for="registerPassword">Password:</label>
-            <input type="password" id="registerPassword" v-model="registerData.password" required minlength="6" />
-            <button type="submit">Register</button>
-        </form>
-
-        <h2>Login</h2>
-        <form @submit.prevent="login">
-            <label for="loginEmail">Email:</label>
-            <input type="email" id="loginEmail" v-model="loginData.email" required />
-            <label for="loginPassword">Password:</label>
-            <input type="password" id="loginPassword" v-model="loginData.password" required />
-            <button type="submit">Login</button>
-        </form>
-
-        <h3>Clear DB</h3>
-        <button @click="clearDB">Clear DB</button>
+        <div class="form-container">
+            <h2>Login</h2>
+            <form @submit.prevent="login">
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" v-model="loginData.email" required />
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" id="loginPassword" v-model="loginData.password" required />
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
     </div>
 </template>
 
@@ -35,8 +42,8 @@ export default {
                 password: "",
             },
             loginData: {
-                email: "test@a.com",
-                password: "123123",
+                email: "",
+                password: "",
             },
         };
     },
@@ -75,10 +82,9 @@ export default {
                 });
 
                 if (response.ok) {
-                    const result = await response.json();
-                    alert(result.message);
-                    localStorage.setItem("token", result.token);
-                    window.location.href = "/browse_library.html";
+                    // const result = await response.json();
+                    alert("Login successful");
+
                 } else {
                     const error = await response.json();
                     alert(`Error: ${error.message}`);
@@ -87,28 +93,60 @@ export default {
                 console.error("Login error:", err);
                 alert("An unexpected error occurred.");
             }
-        },
-        async clearDB() {
-            try {
-                const response = await fetch(`${this.url}/clearDB`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    alert(result.message);
-                } else {
-                    const error = await response.json();
-                    alert(`Error: ${error.message}`);
-                }
-            } catch (err) {
-                console.error("Clear DB error:", err);
-                alert("An unexpected error occurred.");
-            }
-        },
+        }
     },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.login-register {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+</style>

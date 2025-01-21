@@ -1,16 +1,11 @@
 <template>
   <div id="app">
-    <BrowseLibrary />
+    <router-view />
   </div>
 </template>
 
 <script>
-import BrowseLibrary from "./components/BrowseLibrary.vue";
-
 export default {
-  components: {
-    BrowseLibrary,
-  },
 };
 </script>
 
