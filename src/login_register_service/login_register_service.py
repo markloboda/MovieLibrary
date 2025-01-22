@@ -33,7 +33,7 @@ with app.app_context():
 api = Api(app)
 blp = Blueprint("Users", "users", description="Operations on users")
 
-@blp.route("/register", methods=["POST"])
+@blp.route("/service/login-register/register", methods=["POST"])
 class UserRegister(MethodView):
     @blp.arguments(UserSchema)
     @blp.response(201, UserSchema)
@@ -46,7 +46,7 @@ class UserRegister(MethodView):
             abort(409, description=str(e))
         return {"message": f"User {user.email} created."}, 201
 
-@blp.route("/login", methods=["POST"])
+@blp.route("/service/login-register//login", methods=["POST"])
 class UserLogin(MethodView):
     @blp.arguments(UserSchema)
     @blp.response(200, UserSchema)
@@ -68,7 +68,7 @@ class UserLogin(MethodView):
         
         return response
 
-@blp.route("/check-token", methods=["GET"])
+@blp.route("/service/login-register//check-token", methods=["GET"])
 class CheckToken(MethodView):
     @blp.response(200)
     @blp.response(401)

@@ -24,7 +24,7 @@ api = Api(app)
 
 blp = Blueprint('Library', 'library', description='Operations on movies')
 
-@blp.route('/search', methods=['GET'])
+@blp.route('/service/browse-library/search', methods=['GET'])
 def search_movie():
     logger.debug(f"GET on /search.")
     title = request.args.get('title')

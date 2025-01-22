@@ -9,38 +9,27 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: movie-library-ingress
-  annotations:    
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   ingressClassName: nginx
   rules:
   - http:
       paths:
-      - path: /service/browse-library(/|$)(.*)
-        pathType: ImplementationSpecific
+      - path: /service/browse-library
+        pathType: Prefix
         backend:
           service:
             name: browse-library
             port:
               number: 8080
-      - path: /service/login-register(/|$)(.*)
-        pathType: ImplementationSpecific
+      - path: /service/login-register
+        pathType: Prefix
         backend:
           service:
             name: login-register
             port:
               number: 8080
-      - path: /frontend(/|$)(.*)
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: movie-library-frontend
-            port:
-              number: 80
-
-      - path: /(/|$)(.*)
-        pathType: ImplementationSpecific
+      - path: /
+        pathType: Prefix
         backend:
           service:
             name: movie-library-frontend
