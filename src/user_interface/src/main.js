@@ -1,3 +1,7 @@
+window.alert = function(message) {
+  console.log(`[ALERT]: ${message}`); 
+};
+
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';

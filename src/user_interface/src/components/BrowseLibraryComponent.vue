@@ -5,7 +5,7 @@
         <input type="text" v-model="searchQuery" placeholder="Search for movies..." @keyup.enter="searchMovies" />
         <button @click="searchMovies">Search</button>
       </div>
-      <button class="sign-in-button" @click="openLoginRegister">Sign In</button>
+      <button class="sign-in-button" @click="openSignin">Sign In</button>
     </div>
     <div class="movie-list">
       <div v-for="movie in movies" :key="movie.imdbID" class="movie-entry">
@@ -13,7 +13,7 @@
         <div class="movie-details">
           <h3>{{ movie.Title }}</h3>
           <button @click="addToWatchlist(movie)">Add to Watchlist</button>
-          <button @click="addToWatched(movie)">Add to Watched</button>
+          <button>Add to Watched</button>
         </div>
       </div>
     </div>
@@ -24,9 +24,10 @@
 export default {
   data() {
     return {
-      searchQuery: '',
+      searchQuery: "",
       movies: [],
-      apiUrl: 'http://165.227.245.243/service/browse-library'
+      apiUrl: "http://165.227.245.243/service/browse-library",
+      watchlistApiUrl: "http://165.227.245.243/service/watchlist",
     };
   },
   methods: {
@@ -36,8 +37,14 @@ export default {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
-        const result = await response.json();
-        this.movies = result.Search || [];
+        if (response.ok) {
+          alert("Search successful!");
+          const result = await response.json();
+          this.movies = result.Search || [];
+        } else {
+          const error = await response.json();
+          alert(`Error: ${error.message}`);
+        }
       } catch (err) {
         console.error("Search error:", err);
         alert("An unexpected error occurred while searching for movies.");
@@ -46,17 +53,22 @@ export default {
     async addToWatchlist(movie) {
       const token = localStorage.getItem("token");
       try {
-        const response = await fetch(`${this.apiUrl}/watchlist`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ movie }),
+        const body = JSON.stringify({
+          title: movie["Title"],
+          type: movie["Type"],
+          imdb_id: movie["imdbID"],
+          added_date: Date.now(),
+          year: movie["Year"],
+          poster: movie["Poster"],
         });
 
+        const response = await fetch(`${this.watchlistApiUrl}/add-movie`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: body,
+        });
         if (response.ok) {
-          alert("Movie added to watchlist");
+          alert("Movie added to watchlist successfully!");
         } else {
           const error = await response.json();
           alert(`Error: ${error.message}`);
@@ -66,32 +78,9 @@ export default {
         alert("An unexpected error occurred while adding to watchlist.");
       }
     },
-    async addToWatched(movie) {
-      const token = localStorage.getItem("token");
-      try {
-        const response = await fetch(`${this.apiUrl}/watched`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ movie }),
-        });
-
-        if (response.ok) {
-          alert("Movie added to watched list");
-        } else {
-          const error = await response.json();
-          alert(`Error: ${error.message}`);
-        }
-      } catch (err) {
-        console.error("Add to watched error:", err);
-        alert("An unexpected error occurred while adding to watched.");
-      }
+    openSignin() {
+      this.$router.push({ name: "SignIn" });
     },
-    openLoginRegister() {
-      this.$router.push({ name: 'LoginRegister' });
-    }
   },
 };
 </script>

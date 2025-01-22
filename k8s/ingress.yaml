@@ -12,26 +12,33 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - http:
-      paths:
-      - path: /service/browse-library
-        pathType: Prefix
-        backend:
-          service:
-            name: browse-library
-            port:
-              number: 8080
-      - path: /service/login-register
-        pathType: Prefix
-        backend:
-          service:
-            name: login-register
-            port:
-              number: 8080
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: movie-library-frontend
-            port:
-              number: 80
+    - http:
+        paths:
+          - path: /service/browse-library
+            pathType: Prefix
+            backend:
+              service:
+                name: browse-library
+                port:
+                  number: 8080
+          - path: /service/login-register
+            pathType: Prefix
+            backend:
+              service:
+                name: login-register
+                port:
+                  number: 8080
+          - path: /service/watchlist
+            pathType: Prefix
+            backend:
+              service:
+                name: watchlist
+                port:
+                  number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: user-interface
+                port:
+                  number: 80

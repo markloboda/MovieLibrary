@@ -40,7 +40,7 @@ class UserModel(db.Model):
         if not user or user.password != cls.hash_password(password):
             raise InvalidCredentialsException("Invalid credentials.")
         return user
-
+    
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
     email = fields.Email(required=True, validate=validate.Length(min=1))

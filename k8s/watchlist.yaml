@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: watchlist-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: watchlist
+  template:
+    metadata:
+      labels:
+        app: watchlist
+    spec:
+      containers:
+      - name: watchlist
+        image: markloboda/watchlist_service:latest
+        imagePullPolicy: Always
+        env:
+        - name: FLASK_ENV
+          value: development
+        - name: FLASK_DEBUG
+          value: "1"
+        - name: DB_URI
+          valueFrom:
+            secretKeyRef:
+              name: database
+              key: uri
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: watchlist
+spec:
+  type: ClusterIP
+  selector:
+    app: watchlist
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

@@ -1,2 +1,7 @@
-docker build -t markloboda/movie_library_frontend:latest .
-docker push markloboda/movie_library_frontend:latest
+npm run build
+if ($LASTEXITCODE -ne 0) {
+  Write-Error "Build failed. Stopping script."
+  exit 1
+}
+docker build -t markloboda/user-interface:latest .
+docker push markloboda/user-interface:latest
