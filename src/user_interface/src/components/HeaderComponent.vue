@@ -4,7 +4,7 @@
       <router-link to="/">Movie Library</router-link>
     </div>
     <div class="user-button">
-      <button v-if="isUserLoggedIn" @click="toggleUserMenu">{{ getUserName }}</button>
+      <button v-if="isUserLoggedIn()" @click="toggleUserMenu">{{ getUserName }}</button>
       <button v-else @click="openSignin">Sign In</button>
     </div>
     <div v-if="showUserMenu" class="user-menu" @click.self="toggleUserMenu">
@@ -23,11 +23,10 @@ export default {
     };
   },
   computed: {
-    isUserLoggedIn() {
-      return localStorage.getItem("activeUser") !== null;
-    },
     getUserName() {
-      return localStorage.getItem("activeUser").split("@")[0];
+      let user = localStorage.getItem("activeUser");
+      if (!user) return "";
+      return user.split("@")[0];
     },
   },
   methods: {
@@ -36,6 +35,12 @@ export default {
     },
     openWatchlist() {
       this.$router.push({ name: "Watchlist" });
+    },
+    openHome() {
+      this.$router.push("/");
+    },
+    isUserLoggedIn() {
+      return localStorage.getItem("activeUser") !== null;
     },
     toggleUserMenu() {
       this.showUserMenu = !this.showUserMenu;
@@ -51,7 +56,9 @@ export default {
           localStorage.removeItem("activeUser");
           localStorage.removeItem("activeUser");
           alert("Logged out successfully.");
-          location.reload();
+          this.openHome();
+          this.showUserMenu = false;
+          this.$forceUpdate();
         } else {
           const error = await response.json();
           alert(`Error: ${error.message}`);
