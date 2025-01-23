@@ -1,7 +1,27 @@
 # Movie Library
 An application for managing and searching for movies to watch.
 
+## Relavant information
+Application:
+- http://165.227.245.243/ (prijavni podatki: email: test@a.com password: 123123)
+GitHub: 
+- https://github.com/markloboda/MovieLibrary
+Docker hub:
+- https://hub.docker.com/repository/docker/markloboda/user-interface/general
+- https://hub.docker.com/repository/docker/markloboda/watchlist_service/general
+- https://hub.docker.com/repository/docker/markloboda/login_register_service/general
+- https://hub.docker.com/repository/docker/markloboda/browse_library_service/general
+
+## Tools and technologies used
+The main text and code editor used in the project is **Visual Studio Code**.
+For version control and hosting of the project repository, I rely on **Git**, **GitHub** and **Docker Hub**.
+The main web framework used in developing the backend is a **Python-based web framework Flask**, which offers a lightweight and flexible foundation with extensive community support and documentation.
+For the database I use **MySql** and manage it in python with **SQLAlchemy**.
+The front end is implemented using the **JavaScript Framework Vue.js**.
+The application is containerized with **Docker**, orchestrated using **Kubernetes** and deployed on the platform **Digital Ocean**.
+
 ## Documentation
+![alt text](assets/architecture-schema.png)
 
 ### Folder structure
 - assets - All the images and files used in the project.
