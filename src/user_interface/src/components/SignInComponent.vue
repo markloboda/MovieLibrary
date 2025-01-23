@@ -44,14 +44,13 @@ export default {
       loginData: {
         email: "test@a.com",
         password: "123123",
-      },
-      userData: {
-        user_id: 0,
-        email: "",
-      },
+      }
     };
   },
   methods: {
+    openBrowseLibrary() {
+      this.$router.push("/");
+    },
     async register() {
       if (this.registerData.password.length < 6) {
         alert("Password must be at least 6 characters long.");
@@ -85,8 +84,10 @@ export default {
         });
         if (response.ok) {
           alert("Logged in successfully!");
-          this.checkToken();
-          this.$router.push("/watchlist");
+          let successfull = await this.checkToken();
+          if (successfull) {
+            this.openBrowseLibrary();
+          }
         } else {
           const error = await response.json();
           alert(`Error: ${error.message}`);
@@ -98,6 +99,7 @@ export default {
     },
     async checkToken() {
       try {
+        localStorage.removeItem("activeUser");
         const response = await fetch(`${this.apiUrl}/check-token`, {
           method: "GET",
           credentials: "include",
@@ -105,7 +107,8 @@ export default {
         if (response.ok) {
           alert("Token is valid!");
           const result = await response.json();
-          this.userData = result["email"];
+          localStorage.setItem("activeUser", result["email"]);
+          return true;
         } else {
           const error = await response.json();
           alert(`Error: ${error.message}`);
@@ -114,6 +117,8 @@ export default {
         console.error("Check token error:", err);
         alert("An unexpected error occurred while checking token.");
       }
+
+      return false;
     },
   },
 };
@@ -150,7 +155,8 @@ export default {
 
 .form-group input {
   width: 100%;
-  padding: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;

@@ -5,7 +5,14 @@
         <input type="text" v-model="searchQuery" placeholder="Search for movies..." @keyup.enter="searchMovies" />
         <button @click="searchMovies">Search</button>
       </div>
-      <button class="sign-in-button" @click="openSignin">Sign In</button>
+      <div>
+        <button v-if="isUserLoggedIn" @click="toggleUserMenu">{{ getUserName }}</button>
+        <button v-else @click="openSignin">Sign In</button>
+      </div>
+    </div>
+    <div v-if="showUserMenu" class="user-menu">
+      <button @click="logout">Logout</button>
+      <button @click="openWatchlist">Watchlist</button>
     </div>
     <div class="movie-list">
       <div v-for="movie in movies" :key="movie.imdbID" class="movie-entry">
@@ -24,13 +31,31 @@
 export default {
   data() {
     return {
-      searchQuery: "",
-      movies: [],
       apiUrl: "http://165.227.245.243/service/browse-library",
       watchlistApiUrl: "http://165.227.245.243/service/watchlist",
+      searchQuery: "",
+      movies: [],
+      showUserMenu: false,
     };
   },
+  computed: {
+    isUserLoggedIn() {
+      return localStorage.getItem("activeUser") !== null;
+    },
+    getUserName() {
+      return localStorage.getItem("activeUser").split("@")[0];
+    },
+  },
   methods: {
+    openSignin() {
+      this.$router.push({ name: "SignIn" });
+    },
+    openWatchlist() {
+      this.$router.push({ name: "Watchlist" });
+    },
+    toggleUserMenu() {
+      this.showUserMenu = !this.showUserMenu;
+    },
     async searchMovies() {
       try {
         const response = await fetch(`${this.apiUrl}/search?title=${this.searchQuery}`, {
@@ -51,7 +76,6 @@ export default {
       }
     },
     async addToWatchlist(movie) {
-      const token = localStorage.getItem("token");
       try {
         const body = JSON.stringify({
           title: movie["Title"],
@@ -64,7 +88,7 @@ export default {
 
         const response = await fetch(`${this.watchlistApiUrl}/add-movie`, {
           method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          headers: { "Content-Type": "application/json" },
           body: body,
         });
         if (response.ok) {
@@ -78,8 +102,10 @@ export default {
         alert("An unexpected error occurred while adding to watchlist.");
       }
     },
-    openSignin() {
-      this.$router.push({ name: "SignIn" });
+    logout() {
+      localStorage.removeItem("activeUser");
+      // TODO: Clear cookie "jwt".
+      location.reload();
     },
   },
 };
@@ -95,31 +121,41 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  flex: 0.9
+}
+
+.user-menu {
+  position: absolute;
+  top: 50px;
+  right: 20px;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.user-menu button {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
 }
 
 .search-bar {
   display: flex;
   align-items: center;
+  flex: 1;
 }
 
 .search-bar input {
-  flex: 1;
+  flex: 0.8;
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-.search-bar button {
+button {
   margin-left: 10px;
-  padding: 10px 15px;
-  font-size: 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.sign-in-button {
   padding: 10px 15px;
   font-size: 16px;
   border: none;
