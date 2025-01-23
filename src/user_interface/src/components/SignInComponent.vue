@@ -45,8 +45,8 @@ export default {
         password: "",
       },
       loginData: {
-        email: "test@a.com",
-        password: "123123",
+        email: "",
+        password: "",
       }
     };
   },
