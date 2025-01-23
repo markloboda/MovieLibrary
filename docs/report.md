@@ -29,7 +29,7 @@ The application is containerized with Docker, orchestrated using Kubernetes, and
 <div style="page-break-after: always;"></div>
 
 ## Architecture schema
-![alt text](assets/architecture-schema.png)
+![alt text](../assets/architecture-schema.png)
 ## List of microservice functionalities
 - Login register microservice
   - Creating a new user and adding it to the database of all users.
@@ -78,11 +78,11 @@ I used a GitHub repository for my version control. As I was working alone, I use
 ### Deployment
 I deployed my application with DigitalOcean. The Kubernetes cluster with the web application is accessible on http://165.227.245.243/.
 
-## External API
+### External API
 I used an external API called OMDB API for data about movies. I accessed it within the browser library service.
 
-## Graphical user interface
+### Graphical user interface
 I implemented a graphical user interface in Vue.js, which allows access to all the functionalities of the microservices via REST APIs.
 
-## Ingress Controller
+### Ingress Controller
 I implemented an NGINX Ingress Controller for access to all the functionalities of the application.
