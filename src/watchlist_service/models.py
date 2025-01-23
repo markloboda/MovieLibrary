@@ -61,6 +61,16 @@ class WatchlistModel(db.Model):
         return movie
     
     @classmethod
+    def remove_movie(cls, user_id, imdb_id):
+        movie = cls.query.filter_by(user_id=user_id, imdb_id=imdb_id).first()
+        if movie is None:
+            return None
+        
+        db.session.delete(movie)
+        db.session.commit()
+        return movie
+    
+    @classmethod
     def get_movies(cls, user_id):
         return cls.query.filter_by(user_id=user_id).all()
     
@@ -73,3 +83,6 @@ class WatchlistMovieSchema(Schema):
     added_date = fields.Int(required=True)
     year = fields.Int()
     poster = fields.Str()
+    
+class WatchlistMovieIdSchema(Schema):
+    imdb_id = fields.Str(required=True)

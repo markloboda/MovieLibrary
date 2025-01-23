@@ -1,26 +1,16 @@
 <template>
+  <HeaderComponent />
   <div class="browse-library">
-    <div class="header">
-      <div class="search-bar">
-        <input type="text" v-model="searchQuery" placeholder="Search for movies..." @keyup.enter="searchMovies" />
-        <button @click="searchMovies">Search</button>
-      </div>
-      <div>
-        <button v-if="isUserLoggedIn" @click="toggleUserMenu">{{ getUserName }}</button>
-        <button v-else @click="openSignin">Sign In</button>
-      </div>
+    <div class="search-bar">
+      <input type="text" v-model="searchQuery" placeholder="Search for movies..." @keyup.enter="searchMovies" />
+      <button @click="searchMovies">Search</button>
     </div>
-    <div v-if="showUserMenu" class="user-menu">
-      <button @click="logout">Logout</button>
-      <button @click="openWatchlist">Watchlist</button>
-    </div>
-    <div class="movie-list">
-      <div v-for="movie in movies" :key="movie.imdbID" class="movie-entry">
+    <div class="movie-grid">
+      <div v-for="movie in movies" :key="movie.imdb_id" class="movie-entry">
         <img :src="movie.Poster" alt="Movie Poster" class="movie-poster" />
         <div class="movie-details">
           <h3>{{ movie.Title }}</h3>
           <button @click="addToWatchlist(movie)">Add to Watchlist</button>
-          <button>Add to Watched</button>
         </div>
       </div>
     </div>
@@ -28,14 +18,18 @@
 </template>
 
 <script>
+import HeaderComponent from "./HeaderComponent.vue";
+
 export default {
+  components: {
+    HeaderComponent,
+  },
   data() {
     return {
-      apiUrl: "http://165.227.245.243/service/browse-library",
-      watchlistApiUrl: "http://165.227.245.243/service/watchlist",
+      apiUrl: "/service/browse-library",
+      watchlistApiUrl: "/service/watchlist",
       searchQuery: "",
       movies: [],
-      showUserMenu: false,
     };
   },
   computed: {
@@ -47,40 +41,14 @@ export default {
     },
   },
   methods: {
-    openSignin() {
-      this.$router.push({ name: "SignIn" });
-    },
-    openWatchlist() {
-      this.$router.push({ name: "Watchlist" });
-    },
-    toggleUserMenu() {
-      this.showUserMenu = !this.showUserMenu;
-    },
-    async searchMovies() {
-      try {
-        const response = await fetch(`${this.apiUrl}/search?title=${this.searchQuery}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
-        if (response.ok) {
-          alert("Search successful!");
-          const result = await response.json();
-          this.movies = result.Search || [];
-        } else {
-          const error = await response.json();
-          alert(`Error: ${error.message}`);
-        }
-      } catch (err) {
-        console.error("Search error:", err);
-        alert("An unexpected error occurred while searching for movies.");
-      }
-    },
     async addToWatchlist(movie) {
       try {
+        movie["imdb_id"] = movie["imdbID"];
+
         const body = JSON.stringify({
           title: movie["Title"],
           type: movie["Type"],
-          imdb_id: movie["imdbID"],
+          imdb_id: movie["imdb_id"],
           added_date: Date.now(),
           year: movie["Year"],
           poster: movie["Poster"],
@@ -102,10 +70,24 @@ export default {
         alert("An unexpected error occurred while adding to watchlist.");
       }
     },
-    logout() {
-      localStorage.removeItem("activeUser");
-      // TODO: Clear cookie "jwt".
-      location.reload();
+    async searchMovies() {
+      try {
+        const response = await fetch(`${this.apiUrl}/search?title=${this.searchQuery}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+        if (response.ok) {
+          alert("Search successful!");
+          const result = await response.json();
+          this.movies = result.Search || [];
+        } else {
+          const error = await response.json();
+          alert(`Error: ${error.message}`);
+        }
+      } catch (err) {
+        console.error("Search error:", err);
+        alert("An unexpected error occurred while searching for movies.");
+      }
     },
   },
 };
@@ -116,75 +98,38 @@ export default {
   padding: 20px;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  flex: 0.9
-}
-
-.user-menu {
-  position: absolute;
-  top: 50px;
-  right: 20px;
-  background: white;
-  border: 1px solid #ccc;
-  padding: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.user-menu button {
-  display: block;
-  width: 100%;
-  margin-bottom: 10px;
-}
-
-.search-bar {
-  display: flex;
-  align-items: center;
-  flex: 1;
-}
-
-.search-bar input {
-  flex: 0.8;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-button {
-  margin-left: 10px;
-  padding: 10px 15px;
-  font-size: 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.movie-list {
-  display: flex;
-  flex-direction: column;
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
 }
 
 .movie-entry {
-  display: flex;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
 }
 
 .movie-poster {
-  max-width: 150px;
-  margin-right: 20px;
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 .movie-details {
-  flex: 1;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.movie-entry:hover .movie-details {
+  opacity: 1;
 }
 
 .movie-details h3 {
@@ -202,5 +147,19 @@ button {
 
 .movie-details button:hover {
   background-color: #f0f0f0;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.search-bar input {
+  flex: 0.8;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 </style>

@@ -8,7 +8,7 @@ import logging
 import os
 import requests
 import json
-from models import db, WatchlistModel, WatchlistMovieSchema, WatchlistMovieAlreadyExistsException
+from models import db, WatchlistModel, WatchlistMovieSchema, WatchlistMovieIdSchema, WatchlistMovieAlreadyExistsException
 
 # Setup app
 app = Flask(__name__)
@@ -66,6 +66,34 @@ class AddMovie(MethodView):
             abort(422, description=str(e))
             
         response = make_response({"message": f"Movie {movie.title} added to watchlist."}, 201)
+        return response
+    
+@blp.route("/service/watchlist/remove-movie", methods=["POST"])
+class RemoveMovie(MethodView):
+    @blp.arguments(WatchlistMovieIdSchema)
+    @blp.response(200)
+    @blp.response(401)
+    @blp.response(404)
+    def post(self, movie_data):
+        logger.debug(f"Post on /remove-movie. Data: {movie_data}")
+        try:
+            jwt = request.cookies.get("jwt")
+            if jwt is None:
+                abort(401, description="Token is missing")
+            token_response = requests.get("http://165.227.245.243/service/login-register/check-token", cookies={"jwt": jwt})
+            logger.debug(f"Response from login-register: {token_response}")
+            if token_response.status_code != 200:
+                abort(401, description="Token is invalid")
+            
+            user_id = token_response.json()["user_id"]
+                        
+            movie = WatchlistModel.remove_movie(user_id, movie_data["imdb_id"])
+        except WatchlistMovieAlreadyExistsException as e:
+            abort(409, description=str(e))
+        except ValidationError as e:
+            abort(422, description=str(e))
+            
+        response = make_response({"message": f"Movie {movie.title} removed from watchlist."}, 201)
         return response
     
 @blp.route("/service/watchlist/get-movies", methods=["GET"])

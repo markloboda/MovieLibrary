@@ -6,7 +6,7 @@ import WatchlistComponent from './components/WatchlistComponent.vue';
 const routes = [
     { path: '/', name: 'BrowseLibrary', component: BrowseLibrary },
     { path: '/signin', name: 'SignIn', component: SignIn },
-    { path: '/watchlist', name: 'Watchlist', component: WatchlistComponent }
+    { path: '/watchlist', name: 'Watchlist', component: WatchlistComponent },
 ];
 
 const router = createRouter({

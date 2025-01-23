@@ -33,10 +33,11 @@
 </template>
 
 <script>
+
 export default {
   data() {
     return {
-      apiUrl: "http://165.227.245.243/service/login-register",
+      apiUrl: "/service/login-register",
       registerData: {
         email: "",
         password: "",
