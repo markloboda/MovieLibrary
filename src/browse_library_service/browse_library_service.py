@@ -13,9 +13,13 @@ app.config["API_TITLE"] = "BrowseLibraryService"
 app.config["API_VERSION"] = "v1"
 app.config["OPENAPI_VERSION"] = "3.0.2"
 app.config['OPENAPI_URL_PREFIX'] = '/'
+app.config['DEBUG'] = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+if app.config['DEBUG']:
+    logging.basicConfig(level=logging.DEBUG)
+else:
+    logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 logger.debug("Starting BrowseLibraryService")
@@ -46,4 +50,4 @@ def search_movie():
 api.register_blueprint(blp)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(host='0.0.0.0', port=8080)

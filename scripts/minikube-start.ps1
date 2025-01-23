@@ -1,1 +1,0 @@
-minikube service --url login-register browse-library watchlist-watched

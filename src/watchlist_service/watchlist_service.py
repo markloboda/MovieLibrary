@@ -19,9 +19,13 @@ app.config["OPENAPI_VERSION"] = "3.0.2"
 app.config['OPENAPI_URL_PREFIX'] = '/'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['DEBUG'] = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG)
+if app.config['DEBUG']:
+    logging.basicConfig(level=logging.DEBUG)
+else:
+    logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 logger.debug("Starting WatchlistService")
@@ -73,7 +77,8 @@ class RemoveMovie(MethodView):
     @blp.arguments(WatchlistMovieIdSchema)
     @blp.response(200)
     @blp.response(401)
-    @blp.response(404)
+    @blp.response(422)
+    @blp.response(409)
     def post(self, movie_data):
         logger.debug(f"Post on /remove-movie. Data: {movie_data}")
         try:
@@ -93,7 +98,7 @@ class RemoveMovie(MethodView):
         except ValidationError as e:
             abort(422, description=str(e))
             
-        response = make_response({"message": f"Movie {movie.title} removed from watchlist."}, 201)
+        response = make_response({"message": f"Movie {movie.title} removed from watchlist."}, 200)
         return response
     
 @blp.route("/service/watchlist/get-movies", methods=["GET"])
@@ -131,4 +136,4 @@ def custom_422(error):
 api.register_blueprint(blp)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=8080)

@@ -13,21 +13,17 @@ spec:
         app: browse-library
     spec:
       containers:
-      - name: browse-library
-        image: markloboda/browse_library_service:latest
-        imagePullPolicy: Always
-        env:
-        - name: FLASK_ENV
-          value: development
-        - name: FLASK_DEBUG
-          value: "1"
-        - name: API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: omdb
-              key: api-key
-        ports:
-        - containerPort: 8080
+        - name: browse-library
+          image: markloboda/browse_library_service:latest
+          imagePullPolicy: Always
+          env:
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: omdb
+                  key: api-key
+          ports:
+            - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service

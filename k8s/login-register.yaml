@@ -13,26 +13,22 @@ spec:
         app: login-register
     spec:
       containers:
-      - name: login-register
-        image: markloboda/login_register_service:latest
-        imagePullPolicy: Always
-        env:
-        - name: FLASK_ENV
-          value: development
-        - name: FLASK_DEBUG
-          value: "1"
-        - name: DB_URI
-          valueFrom:
-            secretKeyRef:
-              name: database
-              key: uri
-        - name: JWT_SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              name: jwt-secret
-              key: key
-        ports:
-        - containerPort: 8080
+        - name: login-register
+          image: markloboda/login_register_service:latest
+          imagePullPolicy: Always
+          env:
+            - name: DB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: database
+                  key: uri
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: key
+          ports:
+            - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service

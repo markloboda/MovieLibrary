@@ -1,8 +1,24 @@
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.5/deploy/static/provider/cloud/deploy.yaml
-kubectl apply -f ingress.yaml
-kubectl apply -f etcd.yaml
+function DeployAndCheck {
+    param(
+        [string]$file
+    )
+    kubectl apply -f $file
+    $status = kubectl get -f $file
+    if ($status -eq "Error") {
+        Write-Output "Failed to deploy $file"
+        Write-Output "-------------------"
+        Write-Output ""
+        exit 1
+    }
+    Write-Output "Deployed $file"
+    Write-Output "-------------------"
+    Write-Output ""	
+}
 
-kubectl apply -f browse-library.yaml
-kubectl apply -f login-register.yaml
-kubectl apply -f secret.yaml
-kubectl apply -f user-interface.yaml
+DeployAndCheck https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.5/deploy/static/provider/cloud/deploy.yaml
+DeployAndCheck "ingress.yaml"
+DeployAndCheck "secret.yaml"
+DeployAndCheck "browse-library.yaml"
+DeployAndCheck "login-register.yaml"
+DeployAndCheck "user-interface.yaml"
+DeployAndCheck "watchlist.yaml"

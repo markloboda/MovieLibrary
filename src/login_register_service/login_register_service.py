@@ -18,9 +18,13 @@ app.config['OPENAPI_URL_PREFIX'] = '/'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+app.config['DEBUG'] = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG)
+if app.config['DEBUG']:
+    logging.basicConfig(level=logging.DEBUG)
+else:
+    logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 logger.debug("Starting LoginRegisterService")
@@ -111,4 +115,4 @@ def custom_401(error):
 app.register_blueprint(blp)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(host='0.0.0.0', port=8080)
