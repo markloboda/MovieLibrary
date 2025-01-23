@@ -59,12 +59,25 @@ class UserLogin(MethodView):
             abort(401, description=str(e))
         
         token = jwt.encode({
-            'user_id': user.id,
-            'exp': datetime.now(timezone.utc) + timedelta(hours=1)
+            'user_id': user.id
         }, app.config['JWT_SECRET_KEY'], algorithm='HS256')
 
         response = make_response({'message': 'Login successful'}, 200)
-        response.set_cookie('jwt', token, httponly=True, secure=False, samesite='strict')
+        response.set_cookie('jwt', token, httponly=True, secure=False, samesite='strict', expires=datetime.now(timezone.utc) + timedelta(hours=1))
+        return response
+    
+@blp.route("/service/login-register/logout", methods=["POST"])
+class UserLogout(MethodView):
+    @blp.response(200)
+    @blp.response(401)
+    def post(self):
+        logger.debug(f"Post on /logout:\nheaders {request.headers}, cookies {request.cookies}")
+        token = request.cookies.get('jwt')
+        if not token:
+            abort(401, description="Token is missing")
+        
+        response = make_response({'message': 'Logout successful'}, 200)
+        response.set_cookie('jwt', '', httponly=True, secure=False, samesite='strict', expires=0)
         return response
 
 @blp.route("/service/login-register/check-token", methods=["GET"])

@@ -18,6 +18,7 @@
 export default {
   data() {
     return {
+      apiUrl: "/service/login-register",
       showUserMenu: false,
     };
   },
@@ -39,9 +40,26 @@ export default {
     toggleUserMenu() {
       this.showUserMenu = !this.showUserMenu;
     },
-    logout() {
-      localStorage.removeItem("activeUser");
-      location.reload();
+    async logout() {
+      try {
+        const response = await fetch(`${this.apiUrl}/logout`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        });
+        if (response.ok) {
+          localStorage.removeItem("activeUser");
+          localStorage.removeItem("activeUser");
+          alert("Logged out successfully.");
+          location.reload();
+        } else {
+          const error = await response.json();
+          alert(`Error: ${error.message}`);
+        }
+      } catch (err) {
+        console.error("Logout error:", err);
+        alert("An unexpected error occurred while logging out.");
+      }
     },
   }
 }
