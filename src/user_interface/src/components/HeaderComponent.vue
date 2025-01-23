@@ -89,6 +89,7 @@ export default {
   background: white;
   border: 1px solid #ccc;
   padding: 10px;
+  z-index: 1000;
 }
 
 .user-menu button {

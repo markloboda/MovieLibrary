@@ -1,5 +1,6 @@
 <template>
   <div class="signin">
+    <div v-if="notificationMessage" class="notification">{{ notificationMessage }}</div>
     <div class="form-container">
       <h2>Register</h2>
       <form @submit.prevent="register">
@@ -38,6 +39,7 @@ export default {
   data() {
     return {
       apiUrl: "/service/login-register",
+      notificationMessage: "",
       registerData: {
         email: "",
         password: "",
@@ -52,9 +54,17 @@ export default {
     openBrowseLibrary() {
       this.$router.push("/");
     },
+    setNotification(message) {
+      this.notificationMessage = message;
+      setTimeout(() => {
+        this.notificationMessage = "";
+      }, 5000); // Clear the message after 5 seconds
+    },
     async register() {
       if (this.registerData.password.length < 6) {
-        alert("Password must be at least 6 characters long.");
+        let message = "Password must be at least 6 characters long.";
+        alert(message);
+        this.setNotification(message);
         return;
       }
       try {
@@ -64,15 +74,34 @@ export default {
           headers: { "Content-Type": "application/json" },
         });
         if (response.ok) {
-          const result = await response.json();
-          alert(`User registered successfully! User ID: ${result.user_id}`);
+          let message = `User registered successfully!`;
+          alert(message);
+          this.setNotification(message);
+
+          // login after registration
+          this.loginData.email = this.registerData.email;
+          this.loginData.password = this.registerData.password;
+          this.login();
         } else {
           const error = await response.json();
           alert(`Error: ${error.message}`);
+
+          if (response.status === 409) {
+            // Email already exists.
+            let message = "Email already exists.";
+            this.setNotification(message);
+            alert(message);
+          } else {
+            let message = "An unexpected error occurred while registring.";
+            this.setNotification(message);
+            alert(message);
+          }
         }
       } catch (err) {
-        console.error("Registration error:", err);
-        alert("An unexpected error occurred while registring.");
+        let message = "An unexpected error occurred while registring.";
+        this.setNotification(message);
+        alert(message);
+        console.error("Register error:", err);
       }
     },
     async login() {
@@ -84,18 +113,28 @@ export default {
           headers: { "Content-Type": "application/json" },
         });
         if (response.ok) {
-          alert("Logged in successfully!");
           let successfull = await this.checkToken();
           if (successfull) {
+            let message = "Logged in successfully!";
+            this.setNotification(message);
+            alert(message);
             this.openBrowseLibrary();
           }
-        } else {
+        }
+        else if (response.status === 401) {
+          let message = "Invalid email or password.";
+          this.setNotification(message);
+          alert(message);
+        }
+        else {
           const error = await response.json();
           alert(`Error: ${error.message}`);
         }
       } catch (err) {
+        let message = "An unexpected error occurred while logging in.";
+        alert(message);
+        this.setNotification(message);
         console.error("Login error:", err);
-        alert("An unexpected error occurred while logging in.");
       }
     },
     async checkToken() {
