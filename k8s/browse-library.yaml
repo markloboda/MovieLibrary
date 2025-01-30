@@ -17,8 +17,6 @@ spec:
           image: markloboda/browse_library_service:latest
           imagePullPolicy: Always
           env:
-            - name: FLASK_DEBUG
-              value: "1"
             - name: API_KEY
               valueFrom:
                 secretKeyRef:

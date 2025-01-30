@@ -35,6 +35,7 @@ with app.app_context():
 
 api = Api(app)
 blp = Blueprint("Users", "users", description="Operations on users")
+blp_health = Blueprint("Health", "health", description="Health operations")
 
 @blp.route("/service/login-register/register", methods=["POST"])
 @blp.arguments(UserSchema)
@@ -112,6 +113,19 @@ def send_openapi():
     data = api.spec.to_dict()
     return jsonify(data)
 
+@blp_health.route('/service/login-register/health/live', methods=['GET'])
+@blp_health.response(200)
+@blp_health.response(503)
+def health_live():
+    logger.debug(f"GET on /health/live.")
+    try:
+        UserModel.query.first() 
+    except Exception as e:
+        logger.error(f"Database not available: {e}")
+        abort(503, description="Database not available")
+        
+    return {"status": "UP"}, 200
+
 @app.errorhandler(401)
 def custom_401(error):
     response = jsonify({"message": error.description})
@@ -119,6 +133,7 @@ def custom_401(error):
     return response
 
 api.register_blueprint(blp)
+api.register_blueprint(blp_health)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)

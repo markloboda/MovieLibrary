@@ -36,6 +36,7 @@ with app.app_context():
 
 api = Api(app)
 blp = Blueprint("Watchlist", "watchlist", description="Operations on watchlists")
+blp_health = Blueprint("Health", "health", description="Health operations")
 
 @blp.route("/service/watchlist/add-movie", methods=["POST"])
 @blp.arguments(WatchlistMovieSchema)
@@ -132,6 +133,19 @@ class GetMovies(MethodView):
 def send_openapi():
     data = api.spec.to_dict()
     return jsonify(data)
+
+@blp_health.route('/service/watchlist/health/live', methods=['GET'])
+@blp_health.response(200)
+@blp_health.response(503)
+def health_live():
+    logger.debug(f"GET on /health/live.")
+    try:
+        WatchlistModel.query.first() 
+    except Exception as e:
+        logger.error(f"Database not available: {e}")
+        abort(503, description="Database not available")
+        
+    return {"status": "UP"}, 200
     
 @app.errorhandler(401)
 def custom_401(error):
@@ -144,6 +158,7 @@ def custom_422(error):
     return response
         
 api.register_blueprint(blp)
+api.register_blueprint(blp_health)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
