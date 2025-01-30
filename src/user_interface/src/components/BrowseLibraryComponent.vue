@@ -4,12 +4,16 @@
     <div class="search-bar">
       <input type="text" v-model="searchQuery" placeholder="Search for movies..." @keyup.enter="searchMovies" />
       <button @click="searchMovies">Search</button>
+      <select v-model="sortBy" @change="sortMovies">
+        <option value="title">Title</option>
+        <option value="year">Year</option>
+      </select>
     </div>
     <div class="movie-grid">
       <div v-for="movie in movies" :key="movie.imdb_id" class="movie-entry">
         <img :src="movie.Poster" alt="Movie Poster" class="movie-poster" />
         <div class="movie-details">
-          <h3>{{ movie.Title }}</h3>
+          <h3>{{ movie.Title }} ({{ movie.Year }})</h3>
           <button @click="addToWatchlist(movie)">Add to Watchlist</button>
         </div>
       </div>
@@ -27,9 +31,11 @@ export default {
   data() {
     return {
       apiUrl: "/service/browse-library",
+      sortMoviesUrl: "https://faas-fra1-afec6ce7.doserverless.co/api/v1/web/fn-57a39020-d068-4ff2-af87-9df3bf185066/default/sort_movies",
       watchlistApiUrl: "/service/watchlist",
       searchQuery: "",
       movies: [],
+      sortBy: "title"
     };
   },
   computed: {
@@ -38,7 +44,7 @@ export default {
     },
     getUserName() {
       return localStorage.getItem("activeUser").split("@")[0];
-    },
+    }
   },
   methods: {
     async addToWatchlist(movie) {
@@ -80,6 +86,7 @@ export default {
           alert("Search successful!");
           const result = await response.json();
           this.movies = result.Search || [];
+          this.sortMovies();
         } else {
           const error = await response.json();
           alert(`Error: ${error.message}`);
@@ -87,6 +94,19 @@ export default {
       } catch (err) {
         console.error("Search error:", err);
         alert("An unexpected error occurred while searching for movies.");
+      }
+    },
+    async sortMovies() {
+      try {
+        const response = await fetch(this.sortMoviesUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ movies: this.movies, sortBy: this.sortBy }),
+        });
+        const sortedMovies = await response.json();
+        this.movies = sortedMovies;
+      } catch (error) {
+        console.error("Error sorting movies:", error);
       }
     },
   },
