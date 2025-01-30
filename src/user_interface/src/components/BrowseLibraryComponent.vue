@@ -1,5 +1,6 @@
 <template>
   <HeaderComponent />
+  <button @click="demoApiKeyRequest">Demo API Key Request</button>
   <div class="browse-library">
     <div class="search-bar">
       <input type="text" v-model="searchQuery" placeholder="Search for movies..." @keyup.enter="searchMovies" />
@@ -107,6 +108,19 @@ export default {
         this.movies = sortedMovies;
       } catch (error) {
         console.error("Error sorting movies:", error);
+      }
+    },
+    async demoApiKeyRequest() {
+      try {
+        const response = await fetch(`${this.apiUrl}/health/api-key-demo`);
+        if (response.ok) {
+          const data = await response.json();
+          alert(`API Key Demo Response: ${JSON.stringify(data)}`);
+        } else {
+          alert("Failed to make API Key Demo request");
+        }
+      } catch (error) {
+        console.error("Error making API Key Demo request:", error);
       }
     },
   },

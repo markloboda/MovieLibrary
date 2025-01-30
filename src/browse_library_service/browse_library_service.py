@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 logger.debug("Starting BrowseLibraryService")
 
 blp = Blueprint('Library', 'library', description='Operations on movies')
+blp_health = Blueprint('Health', 'health', description='Health operations')
 
 @blp.route('/service/browse-library/search', methods=['GET'])
 @blp.response(200)
@@ -49,12 +50,38 @@ def search_movie():
     
     return jsonify(response.json())
 
+@blp_health.route('/service/browse-library/health/live', methods=['GET'])
+@blp_health.response(503)
+@blp_health.response(200)
+def health_live():
+    logger.debug(f"GET on /health/live.")
+    api_key = os.getenv('API_KEY')
+    if not api_key:
+        abort(503, message="API key is not configured")
+    
+    ## TODO: Commented to avoid calling the API because of the rate limit.
+    # request_string = f'http://www.omdbapi.com/?s=batman&apikey={api_key}'
+    # response = requests.get(request_string)
+    # if response.status_code != 200:
+    #     abort(503, message="Error querying the movie API")
+    
+    return {"status": "UP"}, 200
+
+@blp_health.route('/service/browse-library/health/api-key-demo', methods=['GET'])
+@blp_health.response(200)
+def health_demo():
+    logger.debug(f"GET on /health/api-key-demo.")
+    os.environ['API_KEY'] = ''
+    return {"status": "API key removed"}, 200
+
+    
 @blp.route('/service/browse-library/openapi', methods=['GET'])
 def send_openapi():
     data = api.spec.to_dict()
     return jsonify(data)
 
 api.register_blueprint(blp)
+api.register_blueprint(blp_health)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)

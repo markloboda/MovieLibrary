@@ -17,6 +17,8 @@ spec:
           image: markloboda/browse_library_service:latest
           imagePullPolicy: Always
           env:
+            - name: FLASK_DEBUG
+              value: "1"
             - name: API_KEY
               valueFrom:
                 secretKeyRef:
@@ -24,6 +26,12 @@ spec:
                   key: api-key
           ports:
             - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /service/browse-library/health/live
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
 ---
 apiVersion: v1
 kind: Service
