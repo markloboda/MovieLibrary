@@ -45,3 +45,7 @@ class UserSchema(Schema):
     id = fields.Int(dump_only=True)
     email = fields.Email(required=True, validate=validate.Length(min=1))
     password = fields.Str(required=True, validate=validate.Length(min=6))
+    
+class UserLoginSchema(Schema):
+    email = fields.Email(required=True, validate=validate.Length(min=1))
+    password = fields.Str(required=True, validate=validate.Length(min=6))

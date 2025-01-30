@@ -8,7 +8,7 @@ from flask_smorest import Api, Blueprint
 from flask.views import MethodView
 from flask_cors import CORS
 from datetime import datetime, timedelta, timezone
-from models import db, UserModel, UserSchema, UserAlreadyExistsException, InvalidCredentialsException
+from models import db, UserModel, UserSchema, UserLoginSchema, UserAlreadyExistsException, InvalidCredentialsException
 
 # Setup app
 app = Flask(__name__)
@@ -56,10 +56,10 @@ with app.app_context():
     db.create_all()
 
 @blp.route("/service/login-register/register", methods=["POST"])
-@blp.arguments(UserSchema)
-@blp.response(201)
-@blp.response(409)
 class UserRegister(MethodView):
+    @blp.arguments(UserSchema)
+    @blp.response(201)
+    @blp.response(409)
     def post(self, user_data):
         logger.debug(f"Post on /register. Data: {user_data}")
         try:
@@ -71,10 +71,10 @@ class UserRegister(MethodView):
         return response
 
 @blp.route("/service/login-register/login", methods=["POST"])
-@blp.arguments(UserSchema)
-@blp.response(200)
-@blp.response(401)
 class UserLogin(MethodView):
+    @blp.arguments(UserLoginSchema)
+    @blp.response(200)
+    @blp.response(401)
     def post(self, user_data):
         logger.debug(f"Post on /login. Data: {user_data}")
         try:
@@ -91,9 +91,9 @@ class UserLogin(MethodView):
         return response
     
 @blp.route("/service/login-register/logout", methods=["POST"])
-@blp.response(200)
-@blp.response(401)
 class UserLogout(MethodView):
+    @blp.response(200)
+    @blp.response(401)
     def post(self):
         logger.debug(f"Post on /logout:\nheaders {request.headers}, cookies {request.cookies}")
         token = request.cookies.get('jwt')
@@ -105,9 +105,9 @@ class UserLogout(MethodView):
         return response
 
 @blp.route("/service/login-register/check-token", methods=["GET"])
-@blp.response(200)
-@blp.response(401)
 class CheckToken(MethodView):
+    @blp.response(200)
+    @blp.response(401)
     def get(self):
         logger.debug(f"Get on /check-token:\nheaders {request.headers}, cookies {request.cookies}")
         token = request.cookies.get('jwt')

@@ -55,12 +55,12 @@ with app.app_context():
     db.create_all()
 
 @blp.route("/service/watchlist/add-movie", methods=["POST"])
-@blp.arguments(WatchlistMovieSchema)
-@blp.response(401)
-@blp.response(409)
-@blp.response(422)
-@blp.response(201)
 class AddMovie(MethodView):
+    @blp.arguments(WatchlistMovieSchema)
+    @blp.response(401)
+    @blp.response(409)
+    @blp.response(422)
+    @blp.response(201)
     def post(self, movie_data):
         logger.debug(f"Post on /add-movie. Data: {movie_data}")
         try:
@@ -92,12 +92,12 @@ class AddMovie(MethodView):
         return response
     
 @blp.route("/service/watchlist/remove-movie", methods=["POST"])
-@blp.arguments(WatchlistMovieIdSchema)
-@blp.response(401)
-@blp.response(409)
-@blp.response(422)
-@blp.response(200)
 class RemoveMovie(MethodView):
+    @blp.arguments(WatchlistMovieIdSchema)
+    @blp.response(401)
+    @blp.response(409)
+    @blp.response(422)
+    @blp.response(200)
     def post(self, movie_data):
         logger.debug(f"Post on /remove-movie. Data: {movie_data}")
         try:
@@ -121,11 +121,8 @@ class RemoveMovie(MethodView):
         return response
     
 @blp.route("/service/watchlist/get-movies", methods=["GET"])
-@blp.response(401)
-@blp.response(422)
-@blp.response(200, WatchlistMovieSchema(many=True))
 class GetMovies(MethodView):
-    @blp.response(200)
+    @blp.response(200, WatchlistMovieSchema(many=True))
     @blp.response(401)
     def get(self):
         logger.debug(f"Get on /get-movies.")
