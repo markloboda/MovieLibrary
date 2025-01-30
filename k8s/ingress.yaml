@@ -35,6 +35,13 @@ spec:
                 name: watchlist
                 port:
                   number: 8080
+          - path: /openapi
+            pathType: Prefix
+            backend:
+              service:
+                name: openapi
+                port:
+                  number: 8080
           - path: /
             pathType: Prefix
             backend:

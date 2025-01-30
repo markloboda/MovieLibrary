@@ -1,19 +1,21 @@
-from flask import Flask
-from flask_smorest import Blueprint, Api, abort
-from flask_cors import CORS
 import logging
 import requests
-from flask import request, jsonify
 import os
+from flask import Flask, request, jsonify
+from flask_smorest import Blueprint, Api, abort
+from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 
 app.config["API_TITLE"] = "BrowseLibraryService"
 app.config["API_VERSION"] = "v1"
-app.config["OPENAPI_VERSION"] = "3.0.2"
+app.config['OPENAPI_VERSION'] = '3.0.3'
 app.config['OPENAPI_URL_PREFIX'] = '/'
+app.config['OPENAPI_JSON_PATH'] = 'openapi.json'
 app.config['DEBUG'] = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
+
+api = Api(app)
 
 # Configure logging
 if app.config['DEBUG']:
@@ -21,14 +23,14 @@ if app.config['DEBUG']:
 else:
     logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 logger.debug("Starting BrowseLibraryService")
-
-api = Api(app)
 
 blp = Blueprint('Library', 'library', description='Operations on movies')
 
 @blp.route('/service/browse-library/search', methods=['GET'])
+@blp.response(200)
+@blp.response(400)
+@blp.response(500)
 def search_movie():
     logger.debug(f"GET on /search.")
     title = request.args.get('title')
@@ -46,6 +48,11 @@ def search_movie():
         abort(response.status_code, message="Error querying the movie API")
     
     return jsonify(response.json())
+
+@blp.route('/service/browse-library/openapi', methods=['GET'])
+def send_openapi():
+    data = api.spec.to_dict()
+    return jsonify(data)
 
 api.register_blueprint(blp)
 

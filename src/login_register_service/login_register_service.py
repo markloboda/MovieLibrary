@@ -1,4 +1,4 @@
-from flask import Flask, request, abort, make_response
+from flask import Flask, request, abort, make_response, jsonify
 from flask_smorest import Api, Blueprint
 from flask.views import MethodView
 from flask_cors import CORS
@@ -13,8 +13,9 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True)
 app.config["API_TITLE"] = "LoginRegisterService"
 app.config["API_VERSION"] = "v1"
-app.config["OPENAPI_VERSION"] = "3.0.2"
+app.config['OPENAPI_VERSION'] = '3.0.3'
 app.config['OPENAPI_URL_PREFIX'] = '/'
+app.config['OPENAPI_JSON_PATH'] = 'openapi.json'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
@@ -36,10 +37,10 @@ api = Api(app)
 blp = Blueprint("Users", "users", description="Operations on users")
 
 @blp.route("/service/login-register/register", methods=["POST"])
+@blp.arguments(UserSchema)
+@blp.response(201)
+@blp.response(409)
 class UserRegister(MethodView):
-    @blp.arguments(UserSchema)
-    @blp.response(201, UserSchema)
-    @blp.response(409)
     def post(self, user_data):
         logger.debug(f"Post on /register. Data: {user_data}")
         try:
@@ -51,10 +52,10 @@ class UserRegister(MethodView):
         return response
 
 @blp.route("/service/login-register/login", methods=["POST"])
+@blp.arguments(UserSchema)
+@blp.response(200)
+@blp.response(401)
 class UserLogin(MethodView):
-    @blp.arguments(UserSchema)
-    @blp.response(200, UserSchema)
-    @blp.response(401)
     def post(self, user_data):
         logger.debug(f"Post on /login. Data: {user_data}")
         try:
@@ -71,9 +72,9 @@ class UserLogin(MethodView):
         return response
     
 @blp.route("/service/login-register/logout", methods=["POST"])
+@blp.response(200)
+@blp.response(401)
 class UserLogout(MethodView):
-    @blp.response(200)
-    @blp.response(401)
     def post(self):
         logger.debug(f"Post on /logout:\nheaders {request.headers}, cookies {request.cookies}")
         token = request.cookies.get('jwt')
@@ -85,9 +86,9 @@ class UserLogout(MethodView):
         return response
 
 @blp.route("/service/login-register/check-token", methods=["GET"])
+@blp.response(200)
+@blp.response(401)
 class CheckToken(MethodView):
-    @blp.response(200)
-    @blp.response(401)
     def get(self):
         logger.debug(f"Get on /check-token:\nheaders {request.headers}, cookies {request.cookies}")
         token = request.cookies.get('jwt')
@@ -105,6 +106,11 @@ class CheckToken(MethodView):
             abort(401, description="Token has expired")
         except jwt.InvalidTokenError:
             abort(401, description="Invalid token")
+            
+@blp.route('/service/login-register/openapi', methods=['GET'])
+def send_openapi():
+    data = api.spec.to_dict()
+    return jsonify(data)
 
 @app.errorhandler(401)
 def custom_401(error):
@@ -112,7 +118,7 @@ def custom_401(error):
     response.status_code = 401
     return response
 
-app.register_blueprint(blp)
+api.register_blueprint(blp)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)

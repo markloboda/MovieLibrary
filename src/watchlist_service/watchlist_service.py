@@ -8,15 +8,16 @@ import logging
 import os
 import requests
 import json
-from models import db, WatchlistModel, WatchlistMovieSchema, WatchlistMovieIdSchema, WatchlistMovieAlreadyExistsException
+from models import db, WatchlistModel, WatchlistMovieAlreadyExistsException, WatchlistMovieIdSchema, WatchlistMovieSchema
 
 # Setup app
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 app.config["API_TITLE"] = "LoginRegisterService"
 app.config["API_VERSION"] = "v1"
-app.config["OPENAPI_VERSION"] = "3.0.2"
+app.config['OPENAPI_VERSION'] = '3.0.3'
 app.config['OPENAPI_URL_PREFIX'] = '/'
+app.config['OPENAPI_JSON_PATH'] = 'openapi.json'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['DEBUG'] = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
@@ -37,11 +38,12 @@ api = Api(app)
 blp = Blueprint("Watchlist", "watchlist", description="Operations on watchlists")
 
 @blp.route("/service/watchlist/add-movie", methods=["POST"])
+@blp.arguments(WatchlistMovieSchema)
+@blp.response(401)
+@blp.response(409)
+@blp.response(422)
+@blp.response(201)
 class AddMovie(MethodView):
-    @blp.arguments(WatchlistMovieSchema)
-    @blp.response(201, WatchlistMovieSchema)
-    @blp.response(401)
-    @blp.response(409)
     def post(self, movie_data):
         logger.debug(f"Post on /add-movie. Data: {movie_data}")
         try:
@@ -73,12 +75,12 @@ class AddMovie(MethodView):
         return response
     
 @blp.route("/service/watchlist/remove-movie", methods=["POST"])
+@blp.arguments(WatchlistMovieIdSchema)
+@blp.response(401)
+@blp.response(409)
+@blp.response(422)
+@blp.response(200)
 class RemoveMovie(MethodView):
-    @blp.arguments(WatchlistMovieIdSchema)
-    @blp.response(200)
-    @blp.response(401)
-    @blp.response(422)
-    @blp.response(409)
     def post(self, movie_data):
         logger.debug(f"Post on /remove-movie. Data: {movie_data}")
         try:
@@ -102,6 +104,9 @@ class RemoveMovie(MethodView):
         return response
     
 @blp.route("/service/watchlist/get-movies", methods=["GET"])
+@blp.response(401)
+@blp.response(422)
+@blp.response(200, WatchlistMovieSchema(many=True))
 class GetMovies(MethodView):
     @blp.response(200)
     @blp.response(401)
@@ -122,6 +127,11 @@ class GetMovies(MethodView):
         logger.debug(f"Retrieved movies: {movies}")
 
         return make_response({"movies": movies}, 200)
+    
+@blp.route('/service/watchlist/openapi', methods=['GET'])
+def send_openapi():
+    data = api.spec.to_dict()
+    return jsonify(data)
     
 @app.errorhandler(401)
 def custom_401(error):

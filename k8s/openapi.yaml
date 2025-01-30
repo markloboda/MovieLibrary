@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openapi-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openapi
+  template:
+    metadata:
+      labels:
+        app: openapi
+    spec:
+      containers:
+        - name: openapi
+          image: markloboda/openapi_service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openapi
+spec:
+  type: ClusterIP
+  selector:
+    app: openapi
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
