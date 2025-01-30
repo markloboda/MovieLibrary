@@ -17,8 +17,10 @@ function DeployAndCheck {
 
 DeployAndCheck https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.5/deploy/static/provider/cloud/deploy.yaml
 DeployAndCheck "ingress.yaml"
+DeployAndCheck "etcd.yaml"
 DeployAndCheck "secret.yaml"
 DeployAndCheck "browse-library.yaml"
 DeployAndCheck "login-register.yaml"
 DeployAndCheck "user-interface.yaml"
 DeployAndCheck "watchlist.yaml"
+DeployAndCheck "openapi.yaml"

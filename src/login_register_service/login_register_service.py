@@ -1,11 +1,13 @@
+import logging
+import os
+import jwt
+import etcd3
+import threading
 from flask import Flask, request, abort, make_response, jsonify
 from flask_smorest import Api, Blueprint
 from flask.views import MethodView
 from flask_cors import CORS
 from datetime import datetime, timedelta, timezone
-import logging
-import os
-import jwt
 from models import db, UserModel, UserSchema, UserAlreadyExistsException, InvalidCredentialsException
 
 # Setup app
@@ -19,23 +21,39 @@ app.config['OPENAPI_JSON_PATH'] = 'openapi.json'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
-app.config['DEBUG'] = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
 
-# Configure logging
-if app.config['DEBUG']:
-    logging.basicConfig(level=logging.DEBUG)
-else:
-    logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+etcd = etcd3.client(host='etcd', port=2379)
 
-logger.debug("Starting LoginRegisterService")
-db.init_app(app)
-with app.app_context():
-    db.create_all()
+def update_flask_debug():
+    value, _ = etcd.get('/config/FLASK_DEBUG')
+    debug_enabled = value.decode('utf-8').lower() in ['true', '1', 't'] if value else False
+    app.config['DEBUG'] = debug_enabled
+   
+    if app.config['DEBUG']:
+        logging.basicConfig(level=logging.DEBUG, force = True)
+    else:
+        logging.basicConfig(level=logging.INFO, force = True)
+    logger = logging.getLogger(__name__)
+    logger.info(f"Setting logger to {'DEBUG' if debug_enabled else 'INFO'}")
+    return logger
+
+def watch_flask_debug():
+    events, _ = etcd.watch('/config/FLASK_DEBUG')
+    for _ in events:
+        update_flask_debug()
+        
+threading.Thread(target=watch_flask_debug, daemon=True).start()
 
 api = Api(app)
 blp = Blueprint("Users", "users", description="Operations on users")
 blp_health = Blueprint("Health", "health", description="Health operations")
+
+logger = update_flask_debug()
+logger.debug("Starting LoginRegisterService")
+
+db.init_app(app)
+with app.app_context():
+    db.create_all()
 
 @blp.route("/service/login-register/register", methods=["POST"])
 @blp.arguments(UserSchema)

@@ -1,32 +1,48 @@
 import logging
 import requests
 import os
+import threading
+import etcd3
 from flask import Flask, request, jsonify
 from flask_smorest import Blueprint, Api, abort
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-
 app.config["API_TITLE"] = "BrowseLibraryService"
 app.config["API_VERSION"] = "v1"
 app.config['OPENAPI_VERSION'] = '3.0.3'
 app.config['OPENAPI_URL_PREFIX'] = '/'
 app.config['OPENAPI_JSON_PATH'] = 'openapi.json'
-app.config['DEBUG'] = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
+
+etcd = etcd3.client(host='etcd', port=2379)
+
+def update_flask_debug():
+    value, _ = etcd.get('/config/FLASK_DEBUG')
+    debug_enabled = value.decode('utf-8').lower() in ['true', '1', 't'] if value else False
+    app.config['DEBUG'] = debug_enabled
+   
+    if app.config['DEBUG']:
+        logging.basicConfig(level=logging.DEBUG, force = True)
+    else:
+        logging.basicConfig(level=logging.INFO, force = True)
+    logger = logging.getLogger(__name__)
+    logger.info(f"Setting logger to {'DEBUG' if debug_enabled else 'INFO'}")
+    return logger
+
+def watch_flask_debug():
+    events, _ = etcd.watch('/config/FLASK_DEBUG')
+    for _ in events:
+        update_flask_debug()
+
+threading.Thread(target=watch_flask_debug, daemon=True).start()
 
 api = Api(app)
-
-# Configure logging
-if app.config['DEBUG']:
-    logging.basicConfig(level=logging.DEBUG)
-else:
-    logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-logger.debug("Starting BrowseLibraryService")
-
 blp = Blueprint('Library', 'library', description='Operations on movies')
 blp_health = Blueprint('Health', 'health', description='Health operations')
+
+logger = update_flask_debug()
+logger.debug("Starting BrowseLibraryService")
 
 @blp.route('/service/browse-library/search', methods=['GET'])
 @blp.response(200)
