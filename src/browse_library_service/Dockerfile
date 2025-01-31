@@ -6,7 +6,7 @@ ENV FLASK_RUN_PORT=8080
 
 WORKDIR /app
 
-ADD src/browse_library_service /app
+ADD . /app
 
 RUN pip install --upgrade pip \
   && pip install -r requirements.txt
