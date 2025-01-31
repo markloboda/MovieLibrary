@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -58,14 +58,13 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/openapi_service:latest
 
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v1
-        with:
-          version: "latest"
-
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to Kubernetes
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        uses: digitalocean/app_action/deploy@v2
+        with:
+          token: ${{ secrets.KUBE_TOKEN }}
         run: |
           kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.5/deploy/static/provider/cloud/deploy.yaml
