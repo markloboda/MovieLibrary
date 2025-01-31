@@ -1,3 +1,5 @@
+[![CI/CD Pipeline](https://github.com/markloboda/MovieLibrary/actions/workflows/ci-cd.yaml/badge.svg)](https://github.com/markloboda/MovieLibrary/actions/workflows/ci-cd.yaml)
+
 # Movie Library
 An application for managing and searching for movies to watch.
 
