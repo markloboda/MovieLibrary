@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: watchlist
-          image: markloboda/watchlist_service:latest
+          image: ${{ secrets.DOCKER_USERNAME }}/watchlist_service:latest
           imagePullPolicy: Always
           env:
             - name: DB_URI

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: browse-library
-          image: markloboda/browse_library_service:latest
+          image: ${{ secrets.DOCKER_USERNAME }}/browse_library_service:latest
           imagePullPolicy: Always
           env:
             - name: API_KEY
