@@ -2,11 +2,9 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY src/user_interface /app
 
 RUN npm install
-
-COPY . .
 
 RUN npm run build
 
