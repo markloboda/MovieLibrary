@@ -41,6 +41,10 @@ api = Api(app)
 blp = Blueprint('Library', 'library', description='Operations on movies')
 blp_health = Blueprint('Health', 'health', description='Health operations')
 
+# Suppress werkzeug logs
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 logger = update_flask_debug()
 logger.debug("Starting BrowseLibraryService")
 

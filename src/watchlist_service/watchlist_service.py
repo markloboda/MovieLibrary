@@ -47,6 +47,10 @@ api = Api(app)
 blp = Blueprint("Watchlist", "watchlist", description="Operations on watchlists")
 blp_health = Blueprint("Health", "health", description="Health operations")
 
+# Suppress werkzeug logs
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 logger = update_flask_debug()
 logger.debug("Starting WatchlistService")
 

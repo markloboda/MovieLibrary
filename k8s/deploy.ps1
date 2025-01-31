@@ -15,6 +15,7 @@ function DeployAndCheck {
     Write-Output ""	
 }
 
+DeployAndCheck https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 DeployAndCheck https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.5/deploy/static/provider/cloud/deploy.yaml
 DeployAndCheck "ingress.yaml"
 DeployAndCheck "etcd.yaml"
