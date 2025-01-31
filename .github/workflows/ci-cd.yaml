@@ -27,7 +27,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: src/watchlist_service/
-          file: Dockerfile
+          file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/watchlist_service:latest
 
@@ -35,7 +35,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: src/login_register_service/
-          file: Dockerfile
+          file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/login_register_service:latest
 
@@ -43,7 +43,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: src/browse_library_service/
-          file: /Dockerfile
+          file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/browse_library_service:latest
 
@@ -51,7 +51,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: src/user_interface/
-          file: Dockerfile
+          file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/user-interface:latest
 
@@ -59,7 +59,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: src/OpenAPI/
-          file: Dockerfile
+          file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/openapi_service:latest
 
