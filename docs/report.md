@@ -82,6 +82,10 @@ The application is containerized with Docker, orchestrated using Kubernetes, and
 - Added swagger/OpenAPI documentation for each microservice with the endpoint for documentation.
 - Also includes formats of the request and response bodies and the status codes.
 
+### CI/CD pipeline
+- Implemented a CI/CD pipeline with GitHub Actions to build and push Docker images to Docker Hub.
+- The pipeline is triggered on every push to the main branch or manually.
+
 ### Deployment
 - Deployed my application with DigitalOcean. The Kubernetes cluster with the web application is accessible on http://165.227.245.243/.
 
