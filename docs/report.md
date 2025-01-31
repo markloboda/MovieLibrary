@@ -58,7 +58,10 @@ The application is containerized with Docker, orchestrated using Kubernetes, and
 ## Requirements
 
 ### Repository
-I used a GitHub repository for my version control. As I was working alone, I used the main branch that had the production-ready code and the develop branch with development code. When development code was ready and tested, I merged the develop branch into the main branch. Also added instruction on how to deploy the application and what tools are needed.
+- Used a GitHub repository for my version control. 
+- As I was working alone, I used the main branch that had the production-ready code and the develop branch with development code. 
+- When development code was ready and tested, I merged the develop branch into the main branch.
+-  Also added instruction on how to deploy the application and what tools are needed.
 
 ### Microservices and cloud-native applications:
 - I used Visual Studio Code.
@@ -75,14 +78,33 @@ I used a GitHub repository for my version control. As I was working alone, I use
 - Added a diagram of the architecture schema.
 - Added documentation for the REST API of each microservice.
 
+### API Documentation
+- Added swagger/OpenAPI documentation for each microservice with the endpoint for documentation.
+- Also includes formats of the request and response bodies and the status codes.
+
 ### Deployment
-I deployed my application with DigitalOcean. The Kubernetes cluster with the web application is accessible on http://165.227.245.243/.
+- Deployed my application with DigitalOcean. The Kubernetes cluster with the web application is accessible on http://165.227.245.243/.
+
+### Serverless function
+- Implemented a serverless function to sort movies by year or title. The function is accessible via the browse library service.
+- The serverless function adjusts power automatically.
 
 ### External API
-I used an external API called OMDB API for data about movies. I accessed it within the browser library service.
+- Used an external API called OMDB API for data about movies. I accessed it within the browser library service.
+
+### Health checks
+- Implemented health checks for each microservice to check liveness.
+- Calling health checks and checking liveness of service. If the service is not live, it will restart.
+- Implemented a demo of the health check in the browse library service and user interface.
+
+### Configuration management
+- Deployed etcd server.
+- Support for choosing DEBUG mode or PRODUCTION mode without restarting services.
+- Implementation and configurations separated and allow for configuration changes without recompiling and installing the microservices.
+- Use of DB_URI for the database connection, JWT_SECRET_KEY for jwt token, and OMDB_API_KEY for the external API.
 
 ### Graphical user interface
-I implemented a graphical user interface in Vue.js, which allows access to all the functionalities of the microservices via REST APIs.
+- Implemented a graphical user interface in Vue.js, which allows access to all the functionalities of the microservices via REST APIs.
 
 ### Ingress Controller
-I implemented an NGINX Ingress Controller for access to all the functionalities of the application.
+- Implemented an NGINX Ingress Controller for access to all the functionalities of the application.
