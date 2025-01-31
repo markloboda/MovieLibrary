@@ -26,7 +26,7 @@ jobs:
       - name: Build and push Docker image for watchlist service
         uses: docker/build-push-action@v3
         with:
-          context: ./src/watchlist_service
+          context: ./src/watchlist_service/
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/watchlist_service:latest
@@ -34,7 +34,7 @@ jobs:
       - name: Build and push Docker image for login register service
         uses: docker/build-push-action@v3
         with:
-          context: ./src/login_register_service
+          context: ./src/login_register_service/
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/login_register_service:latest
@@ -42,7 +42,7 @@ jobs:
       - name: Build and push Docker image for browse library service
         uses: docker/build-push-action@v3
         with:
-          context: ./src/browse_library_service
+          context: ./src/browse_library_service/
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/browse_library_service:latest
@@ -50,7 +50,7 @@ jobs:
       - name: Build and push Docker image for user interface
         uses: docker/build-push-action@v3
         with:
-          context: ./src/user_interface
+          context: ./src/user_interface/
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/user-interface:latest
