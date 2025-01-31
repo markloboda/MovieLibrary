@@ -5,19 +5,16 @@ RUN apt-get update \
 
 ENV MYSQLCLIENT_INCLUDE_DIRS=/usr/include/mariadb
 ENV MYSQLCLIENT_LIB_DIRS=/usr/lib/x86_64-linux-gnu
-
-WORKDIR /app
-
-COPY requirements.txt .
-
-RUN pip install --upgrade pip \
-    && pip install -r requirements.txt
-
-COPY . .
-
 ENV FLASK_APP=watchlist_service.py
 ENV FLASK_RUN_HOST=0.0.0.0
 ENV FLASK_RUN_PORT=8080
+
+WORKDIR /app
+
+ADD src/watchlist_service /app
+
+RUN pip install --upgrade pip \
+    && pip install -r requirements.txt
 
 EXPOSE 8080
 
