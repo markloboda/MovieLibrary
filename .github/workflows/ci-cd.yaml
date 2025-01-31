@@ -26,8 +26,7 @@ jobs:
       - name: Build and push Docker image for watchlist service
         uses: docker/build-push-action@v3
         with:
-          context: ./src/watchlist_service/
-          file: ./Dockerfile
+          file: src/watchlist_service/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/watchlist_service:latest
 
