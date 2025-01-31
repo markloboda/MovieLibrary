@@ -57,14 +57,14 @@ jobs:
           file: src/OpenAPI/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/openapi_service:latest
-
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to Kubernetes
+      - name: Setup Kubernetes
         uses: digitalocean/app_action/deploy@v2
         with:
           token: ${{ secrets.KUBE_TOKEN }}
+      - name: Deploy to Kubernetes
         run: |
           kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.5/deploy/static/provider/cloud/deploy.yaml
