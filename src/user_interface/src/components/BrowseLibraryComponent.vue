@@ -1,6 +1,6 @@
 <template>
   <HeaderComponent />
-  <button @click="demoApiKeyRequest">Demo API Key Request</button>
+  <button @click="demoApiKeyRequest">Demo API Key Request Test</button>
   <div class="browse-library">
     <div class="search-bar">
       <input type="text" v-model="searchQuery" placeholder="Search for movies..." @keyup.enter="searchMovies" />

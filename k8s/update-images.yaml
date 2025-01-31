@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: update-images
+spec:
+  ttlSecondsAfterFinished: 10
+  template:
+    spec:
+      containers:
+        - name: kubectl
+          image: bitnami/kubectl:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              kubectl get deployments --all-namespaces -o json | \
+              jq -r '.items[] | "\(.metadata.namespace) \(.metadata.name)"' | \
+              while read namespace name; do
+                kubectl rollout restart deployment $name -n $namespace;
+              done
+      restartPolicy: Never
